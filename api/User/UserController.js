@@ -22,6 +22,7 @@ const register = async (req, res) => {
             firstName: req.body.firstName,    // שם פרטי
             lastName: req.body.lastName,      // שם משפחה
             email: req.body.email,           // כתובת אימייל
+            password: req.body.password,     // סיסמא
             birthday: req.body.birthday,     // תאריך לידה
             permission: 'user'               // הרשאת משתמש - ברירת מחדל 'user'
         });

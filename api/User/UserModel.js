@@ -18,6 +18,11 @@ const userSchema = new mongoose.Schema({
         trim: true,       // מסיר רווחים מיותרים
         lowercase: true   // הופך לאותיות קטנות
     },
+    password: {           // סיסמא
+        type: String,     // מסוג מחרוזת
+        required: true,   // שדה חובה
+        trim: true       // מסיר רווחים מיותרים
+    },
     birthday: {           // תאריך לידה
         type: Date,       // מסוג תאריך
         required: true    // שדה חובה

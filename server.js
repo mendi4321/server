@@ -1,5 +1,7 @@
 const express = require('express');
 const app = express();
+const userRouter = require('./api/User/UserRouter');
+
 const mongoose = require('mongoose');
 const uri = "mongodb+srv://david:Aa123456@cluster0.gjwge.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0";
 
@@ -11,14 +13,15 @@ async function run() {
         await mongoose.connect(uri, clientOptions);
         await mongoose.connection.db.admin().command({ ping: 1 });
         console.log("Pinged your deployment. You successfully connected to MongoDB!");
-    } finally {
-        // Ensures that the client will close when you finish/error
-        await mongoose.disconnect();
+    } catch (error) {
+        console.error('Error connecting to MongoDB:', error);
     }
 }
 run().catch(console.dir);
 
-
+// הגדרת הנתיב הבסיסי לראוטר המשתמשים
+app.use(express.json());
+app.use('/api/user', userRouter);
 
 app.get('/', (req, res) => {
     res.send('Hello World');

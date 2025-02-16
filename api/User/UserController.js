@@ -52,7 +52,12 @@ const register = async (req, res) => {
         });
     }
 };
-// ייצוא הפונקציות שיהיו זמינות לשימוש בקבצים אחרים
-module.exports = {
-    register
-};
+
+const login = async (req, res) => {
+
+
+    // ייצוא הפונקציות שיהיו זמינות לשימוש בקבצים אחרים
+    module.exports = {
+        register,
+        login,
+    };

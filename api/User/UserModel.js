@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const bcrypt = require('bcryptjs');
 
 const userSchema = new mongoose.Schema({
     firstName: {          // שם פרטי
@@ -37,6 +38,15 @@ const userSchema = new mongoose.Schema({
     timestamps: true      // מוסיף שדות של זמן יצירה ועדכון אחרון
 });
 
-const User = mongoose.model('User', userSchema);
+// פונקציה שמטפלת בסיסמא של המשתמש
+userSchema.pre('save', async function (next) {
+    const salt = await bcrypt.genSalt(12);
+    const hash = await bcrypt.hash(this.password, salt);
+    this.password = hash;
+    next();
+});
 
+
+// ייצוא המודל לשימוש בקובץ הראשי (server.js)
+const User = mongoose.model('User', userSchema);
 module.exports = User;

@@ -7,6 +7,9 @@ const app = express();
 // ייבוא הראוטר של המשתמשים מהנתיב המתאים
 const userRouter = require('./api/User/UserRouter');
 
+// ייבוא ספריית cors שמשמשת להגבלת הגורסים שיכולים להגיע לשרת
+const cors = require('cors');
+
 // ייבוא ספריית mongoose שמשמשת לחיבור וניהול מסד הנתונים MongoDB
 const mongoose = require('mongoose');
 
@@ -37,6 +40,9 @@ async function run() {
 
 // הפעלת פונקציית החיבור למסד הנתונים
 run().catch(console.dir);
+
+// הגדרת כל הגורסים שיכולים להגיע לשרת
+app.use(cors());
 
 // middleware שמאפשר לקרוא JSON מה-body של הבקשה
 app.use(express.json());

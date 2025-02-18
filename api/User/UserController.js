@@ -1,6 +1,8 @@
 
 // ייבוא מודל המשתמש מהקובץ UserModel.js
 const User = require('./UserModel');
+const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
 
 // פונקציית הרשמה למשתמש חדש - מקבלת את בקשת המשתמש (req) ואת אובייקט התגובה (res)
 const register = async (req, res) => {
@@ -45,6 +47,7 @@ const register = async (req, res) => {
     } catch (error) {
         // תפיסת שגיאות - אם קרתה שגיאה כלשהי בתהליך
         // מחזיר תשובת שגיאה עם סטטוס 500 (Internal Server Error)
+        console.error('Error registering user:', error);
         res.status(500).json({
             success: false,
             message: 'Error registering user',
@@ -54,10 +57,59 @@ const register = async (req, res) => {
 };
 
 const login = async (req, res) => {
+    const { email, password } = req.body;
+    if (!email || !password) {
+        return res.status(400).json({
+            success: false,
+            message: 'Email and password are required',
+            error: 'Email and password are required'
+        });
+    }
+    try {
+        const user = await User.findOne({ email });
+        if (!user || !bcrypt.compareSync(password, user.password)) {
+            return res.status(401).json({
+                success: false,
+                message: 'Invalid email or password',
+                error: 'Invalid email or password'
+            });
+        }
+        const token = jwt.sign({ userId: user._id }, 'secret', { expiresIn: '1h' });
+        res.status(200).json({
+            success: true,
+            message: 'Login successful',
+            data: token
+        });
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: 'Invalid email or password',
+            error: 'Invalid email or password'
+        });
+    }
+}
 
+// פונקציה לשליפת כל המשתמשים מהמסד הנתונים
+const getAllUsers = async (req, res) => {
+    try {
+        const users = await User.find();
+        res.status(200).json({
+            success: true,
+            message: 'All users fetched',
+            data: users
+        });
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: 'Error fetching users',
+            error: error.message
+        });
+    }
+};
 
-    // ייצוא הפונקציות שיהיו זמינות לשימוש בקבצים אחרים
-    module.exports = {
-        register,
-        login,
-    };
+// ייצוא הפונקציות שיהיו זמינות לשימוש בקבצים אחרים
+module.exports = {
+    register,
+    login,
+    getAllUsers,
+};

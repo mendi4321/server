@@ -1,3 +1,6 @@
+
+// ייבוא הספרייה dotenv שמשמשת להגדרת משתנים בסביבת השרת
+require('dotenv').config();
 // ייבוא הספרייה express שמשמשת ליצירת שרת
 const express = require('express');
 

@@ -1,7 +1,8 @@
-
 // ייבוא מודל המשתמש מהקובץ UserModel.js
 const User = require('./UserModel');
+// ייבוא ספריית bcrypt כדי לצפות בסיס מספר 1 להצבת משתנים מהבקשה (req.body)
 const bcrypt = require('bcryptjs');
+// ייבוא ספריית jwt כדי ליצור טוקן עבור המשתמש
 const jwt = require('jsonwebtoken');
 
 // פונקציית הרשמה למשתמש חדש - מקבלת את בקשת המשתמש (req) ואת אובייקט התגובה (res)
@@ -10,7 +11,6 @@ const register = async (req, res) => {
         // בדיקה אם קיים כבר משתמש עם אותו אימייל במערכת
         // findOne מחזיר את המשתמש הראשון שעונה על התנאי (email)
         const existingUser = await User.findOne({ email: req.body.email });
-
         // אם נמצא משתמש קיים
         if (existingUser) {
             // מחזיר תשובת שגיאה עם סטטוס 400 (Bad Request)
@@ -31,7 +31,8 @@ const register = async (req, res) => {
         // שמירת המשתמש החדש במסד הנתונים
         // save() מחזירה Promise עם המשתמש שנשמר
         const savedUser = await newUser.save();
-
+        // יצירת טוקן עבור המשתמש
+        const token = jwt.sign({ userId: savedUser._id }, process.env.TOKEN_SECRET, { expiresIn: '1h' });
         // החזרת תשובה חיובית עם סטטוס 201 (Created)
         res.status(201).json({
             success: true,
@@ -40,10 +41,12 @@ const register = async (req, res) => {
                 id: savedUser._id,           // המזהה הייחודי שנוצר ע"י מונגו
                 firstName: savedUser.firstName,
                 lastName: savedUser.lastName,
-                email: savedUser.email
-            }
+                email: savedUser.email,
+                birthday: savedUser.birthday,
+                permission: savedUser.permission,
+            },
+            token,
         });
-
     } catch (error) {
         // תפיסת שגיאות - אם קרתה שגיאה כלשהי בתהליך
         // מחזיר תשובת שגיאה עם סטטוס 500 (Internal Server Error)
@@ -55,9 +58,11 @@ const register = async (req, res) => {
         });
     }
 };
-
+// פונקציה להתחברות למערכת - מקבלת את בקשת המשתמש והאובייקט התגובה (req, res)
 const login = async (req, res) => {
+    // שימוש בגורם מספר 1 להצבת משתנים מהבקשה (req.body)
     const { email, password } = req.body;
+    // בדיקה אם קיימים משתנים בבקשה
     if (!email || !password) {
         return res.status(400).json({
             success: false,
@@ -65,8 +70,10 @@ const login = async (req, res) => {
             error: 'Email and password are required'
         });
     }
+    // ניסיון למצוא משתמש עם האימייל המסומך במסד הנתונים
     try {
         const user = await User.findOne({ email });
+        // בדיקה אם לא נמצא משתמש או שהסיסמא אינה תואמת
         if (!user || !bcrypt.compareSync(password, user.password)) {
             return res.status(401).json({
                 success: false,
@@ -74,13 +81,25 @@ const login = async (req, res) => {
                 error: 'Invalid email or password'
             });
         }
-        const token = jwt.sign({ userId: user._id }, 'secret', { expiresIn: '1h' });
+        // יצירת טוקן עבור המשתמש
+        const token = jwt.sign({ userId: user._id }, process.env.TOKEN_SECRET, { expiresIn: '1h' });
+        // החזרת תשובה חיובית עם סטטוס 200 (OK)
         res.status(200).json({
             success: true,
             message: 'Login successful',
-            data: token
+            data: {
+                id: user._id,
+                firstName: user.firstName,
+                lastName: user.lastName,
+                email: user.email,
+                birthday: user.birthday,
+                permission: user.permission,
+            },
+            token,
         });
     } catch (error) {
+        // תפיסת שגיאות - אם קרתה שגיאה כלשהי בתהליך
+        // מחזיר תשובת שגיאה עם סטטוס 500 (Internal Server Error)
         res.status(500).json({
             success: false,
             message: 'Invalid email or password',
@@ -88,7 +107,6 @@ const login = async (req, res) => {
         });
     }
 }
-
 // פונקציה לשליפת כל המשתמשים מהמסד הנתונים
 const getAllUsers = async (req, res) => {
     try {
@@ -106,7 +124,6 @@ const getAllUsers = async (req, res) => {
         });
     }
 };
-
 // ייצוא הפונקציות שיהיו זמינות לשימוש בקבצים אחרים
 module.exports = {
     register,

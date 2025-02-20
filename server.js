@@ -1,25 +1,12 @@
+require('dotenv').config();// ייבוא הספרייה dotenv שמשמשת להגדרת משתנים בסביבת השרת
+const express = require('express');// ייבוא הספרייה express שמשמשת ליצירת שר
+const app = express();// יצירת אפליקציית express חדשה
+const userRouter = require('./api/User/UserRouter');// ייבוא הראוטר של המשתמשים מהנתיב המתאים
+const cors = require('cors');// ייבוא ספריית cors שמשמשת להגבלת הגורסים שיכולים להגיע לשרת
+const mongoose = require('mongoose');// ייבוא ספריית mongoose שמשמשת לחיבור וניהול מסד הנתונים MongoDB
 
-// ייבוא הספרייה dotenv שמשמשת להגדרת משתנים בסביבת השרת
-require('dotenv').config();
-// ייבוא הספרייה express שמשמשת ליצירת שרת
-const express = require('express');
-
-// יצירת אפליקציית express חדשה
-const app = express();
-
-// ייבוא הראוטר של המשתמשים מהנתיב המתאים
-const userRouter = require('./api/User/UserRouter');
-
-// ייבוא ספריית cors שמשמשת להגבלת הגורסים שיכולים להגיע לשרת
-const cors = require('cors');
-
-// ייבוא ספריית mongoose שמשמשת לחיבור וניהול מסד הנתונים MongoDB
-const mongoose = require('mongoose');
-
-//  כתובת החיבור למסד הנתונים שלי MongoDB Atlas
-// כולל שם משתמש וסיסמה
+// כולל שם משתמש וסיסמה          //  כתובת החיבור למסד הנתונים שלי MongoDB Atlas
 const uri = "mongodb+srv://david:Aa123456@cluster0.gjwge.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0";
-
 // הגדרות חיבור ל-MongoDB
 // מגדיר את גרסת ה-API ומספר הגדרות אבטחה
 const clientOptions = { serverApi: { version: '1', strict: true, deprecationErrors: true } };

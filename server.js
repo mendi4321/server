@@ -4,6 +4,8 @@ const app = express();// יצירת אפליקציית express חדשה
 const userRouter = require('./api/User/UserRouter');// ייבוא הראוטר של המשתמשים מהנתיב המתאים
 const cors = require('cors');// ייבוא ספריית cors שמשמשת להגבלת הגורסים שיכולים להגיע לשרת
 const mongoose = require('mongoose');// ייבוא ספריית mongoose שמשמשת לחיבור וניהול מסד הנתונים MongoDB
+const transactionRouter = require('./api/transaction/transactionRouter');// ייבוא הראוטר של העסקאות מהנתיב המתאים
+
 
 // כולל שם משתמש וסיסמה          //  כתובת החיבור למסד הנתונים שלי MongoDB Atlas
 const uri = "mongodb+srv://david:Aa123456@cluster0.gjwge.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0";
@@ -40,11 +42,7 @@ app.use(express.json());
 // הגדרת נתיב בסיסי לכל הבקשות הקשורות למשתמשים
 // כל בקשה שמתחילה ב-/api/user תנותב לראוטר המשתמשים
 app.use('/api/user', userRouter);
-
-// הגדרת נתיב ראשי (/) שמחזיר Hello World
-app.get('/', (req, res) => {
-    res.send('Hello World');
-});
+app.use('/api/transactions', transactionRouter);
 
 // הפעלת השרת על פורט 3000
 app.listen(3000, () => {

@@ -1,6 +1,7 @@
 const jwt = require('jsonwebtoken');
 const User = require('../User/UserModel');
 
+
 // פונקציה לאימות טוקן והחזרת משתמש מסומך בטוקן
 async function verifyToken(permission, req, res, next) {
     try {

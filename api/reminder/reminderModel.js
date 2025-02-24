@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 
+// שימוש בסכמה של התזכורת   
 const reminderSchema = new mongoose.Schema({
     userId: {
         type: mongoose.Schema.Types.ObjectId,
@@ -25,4 +26,5 @@ const reminderSchema = new mongoose.Schema({
     }
 });
 
+// יצירת מודל של התזכורת
 module.exports = mongoose.model("Reminder", reminderSchema);

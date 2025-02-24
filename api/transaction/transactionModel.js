@@ -32,4 +32,5 @@ const transactionSchema = new mongoose.Schema({
     timestamps: true
 });
 
+// יצירת מודל של העסקה
 module.exports = mongoose.model("Transaction", transactionSchema);

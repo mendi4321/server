@@ -1,6 +1,6 @@
+// שימוש במודל של העסקה 
 const Transaction = require("./transactionModel");
-
-// שליפת כל העסקאות
+// פונקציות לשליפת כל העסקאות
 exports.getTransactions = async (req, res) => {
     try {
         const transactions = await Transaction.find().sort({ date: -1 });
@@ -10,7 +10,7 @@ exports.getTransactions = async (req, res) => {
     }
 };
 
-// הוספת עסקה חדשה
+// פונקציות להוספת עסקה חדשה
 exports.addTransaction = async (req, res) => {
     try {
         console.log(req.body)
@@ -23,7 +23,7 @@ exports.addTransaction = async (req, res) => {
     }
 };
 
-// מחיקת עסקה
+// פונקציות למחיקת עסקה
 exports.deleteTransaction = async (req, res) => {
     try {
         await Transaction.findByIdAndDelete(req.params.id);
@@ -33,7 +33,7 @@ exports.deleteTransaction = async (req, res) => {
     }
 };
 
-// עדכון עסקה
+// פונקציות לעדכון עסקה
 exports.updateTransaction = async (req, res) => {
     try {
         const updatedTransaction = await Transaction.findByIdAndUpdate(

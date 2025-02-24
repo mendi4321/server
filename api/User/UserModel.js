@@ -37,7 +37,6 @@ const userSchema = new mongoose.Schema({
 }, {
     timestamps: true      // מוסיף שדות של זמן יצירה ועדכון אחרון
 });
-
 // פונקציה שמטפלת בסיסמא של המשתמש
 userSchema.pre('save', async function (next) {
     const salt = await bcrypt.genSalt(12);
@@ -45,7 +44,6 @@ userSchema.pre('save', async function (next) {
     this.password = hash;
     next();
 });
-
 
 // ייצוא המודל לשימוש בקובץ הראשי (server.js)
 const User = mongoose.model('User', userSchema);

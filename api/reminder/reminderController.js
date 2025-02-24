@@ -10,7 +10,6 @@ const createReminder = async (req, res) => {
         res.status(400).send(error);
     }
 };
-
 // קבלת כל התזכורות
 const getReminders = async (req, res) => {
     try {
@@ -20,7 +19,6 @@ const getReminders = async (req, res) => {
         res.status(500).send(error);
     }
 };
-
 // עדכון תזכורת
 const updateReminder = async (req, res) => {
     try {
@@ -33,7 +31,6 @@ const updateReminder = async (req, res) => {
         res.status(400).send(error);
     }
 };
-
 // מחיקת תזכורת
 const deleteReminder = async (req, res) => {
     try {
@@ -46,5 +43,5 @@ const deleteReminder = async (req, res) => {
         res.status(500).send(error);
     }
 };
-
+// פונקציות ליצירת, קבלת, עדכון ומחיקת תזכורות
 module.exports = { createReminder, getReminders, updateReminder, deleteReminder };

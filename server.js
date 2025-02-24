@@ -7,9 +7,6 @@ const mongoose = require('mongoose');// ייבוא ספריית mongoose שמש�
 const transactionRouter = require('./api/transaction/transactionRouter');// ייבוא הראוטר של העסקאות מהנתיב המתאים
 const reminderRouter = require('./api/reminder/ReminderRouter');
 
-// כולל שם משתמש וסיסמה          //  כתובת החיבור למסד הנתונים שלי MongoDB Atlas
-const uri = "mongodb+srv://david:Aa123456@cluster0.gjwge.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0";
-// הגדרות חיבור ל-MongoDB
 // מגדיר את גרסת ה-API ומספר הגדרות אבטחה
 const clientOptions = { serverApi: { version: '1', strict: true, deprecationErrors: true } };
 
@@ -17,7 +14,7 @@ const clientOptions = { serverApi: { version: '1', strict: true, deprecationErro
 async function run() {
     try {
         // יצירת חיבור למונגו עם ההגדרות שהוגדרו למעלה
-        await mongoose.connect(uri, clientOptions);
+        await mongoose.connect(process.env.MONGODB_URI, clientOptions);
 
         // בדיקה שהחיבור עובד על ידי שליחת פקודת ping
         await mongoose.connection.db.admin().command({ ping: 1 });
@@ -45,8 +42,8 @@ app.use('/api/user', userRouter);
 app.use('/api/transactions', transactionRouter);
 app.use('/api/reminders', reminderRouter);
 
-// הפעלת השרת על פורט 3001
-app.listen(process.env.PORT || 3001, () => {
+// הפעלת השרת על פורט 3000
+app.listen(process.env.PORT || 3000, () => {
     // הדפסה ללוג כשהשרת עולה בהצלחה
-    console.log(`Server is running on port ${process.env.PORT || 3001}`);
+    console.log(`Server is running on port ${process.env.PORT || 3000}`);
 });

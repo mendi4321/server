@@ -5,7 +5,7 @@ const userRouter = require('./api/User/UserRouter');// ייבוא הראוטר �
 const cors = require('cors');// ייבוא ספריית cors שמשמשת להגבלת הגורסים שיכולים להגיע לשרת
 const mongoose = require('mongoose');// ייבוא ספריית mongoose שמשמשת לחיבור וניהול מסד הנתונים MongoDB
 const transactionRouter = require('./api/transaction/transactionRouter');// ייבוא הראוטר של העסקאות מהנתיב המתאים
-
+const reminderRouter = require('./api/reminder/ReminderRouter');
 
 // כולל שם משתמש וסיסמה          //  כתובת החיבור למסד הנתונים שלי MongoDB Atlas
 const uri = "mongodb+srv://david:Aa123456@cluster0.gjwge.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0";
@@ -43,9 +43,10 @@ app.use(express.json());
 // כל בקשה שמתחילה ב-/api/user תנותב לראוטר המשתמשים
 app.use('/api/user', userRouter);
 app.use('/api/transactions', transactionRouter);
+app.use('/api/reminders', reminderRouter);
 
-// הפעלת השרת על פורט 3000
-app.listen(3000, () => {
+// הפעלת השרת על פורט 3001
+app.listen(process.env.PORT || 3001, () => {
     // הדפסה ללוג כשהשרת עולה בהצלחה
-    console.log('Server is running on port 3000');
+    console.log(`Server is running on port ${process.env.PORT || 3001}`);
 });

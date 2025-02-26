@@ -6,6 +6,7 @@ const cors = require('cors');// ייבוא ספריית cors שמשמשת להג
 const mongoose = require('mongoose');// ייבוא ספריית mongoose שמשמשת לחיבור וניהול מסד הנתונים MongoDB
 const transactionRouter = require('./api/transaction/transactionRouter');// ייבוא הראוטר של העסקאות מהנתיב המתאים
 const reminderRouter = require('./api/reminder/ReminderRouter');
+const { verifyUser } = require('./api/middllewares/loginMiddllewares');
 
 // מגדיר את גרסת ה-API ומספר הגדרות אבטחה
 const clientOptions = { serverApi: { version: '1', strict: true, deprecationErrors: true } };
@@ -39,8 +40,8 @@ app.use(express.json());
 // הגדרת נתיב בסיסי לכל הבקשות הקשורות למשתמשים
 // כל בקשה שמתחילה ב-/api/user תנותב לראוטר המשתמשים
 app.use('/api/user', userRouter);
-app.use('/api/transactions', transactionRouter);
-app.use('/api/reminders', reminderRouter);
+app.use('/api/transactions', verifyUser, transactionRouter);
+app.use('/api/reminders', verifyUser, reminderRouter);
 
 // הפעלת השרת על פורט 3000
 app.listen(process.env.PORT || 3000, () => {

@@ -3,7 +3,7 @@ const Transaction = require("./transactionModel");
 // פונקציות לשליפת כל העסקאות
 exports.getTransactions = async (req, res) => {
     try {
-        const transactions = await Transaction.find().sort({ date: -1 });
+        const transactions = await Transaction.find({ userId: req.user._id }).sort({ date: -1 });
         res.json(transactions);
     } catch (error) {
         res.status(500).json({ error: "Error fetching transactions" });
@@ -14,8 +14,8 @@ exports.getTransactions = async (req, res) => {
 exports.addTransaction = async (req, res) => {
     try {
         console.log(req.body)
-        const { date, description, amount, type, userId } = req.body;
-        const newTransaction = new Transaction({ date, description, amount, type, userId });
+        const { date, description, amount, type, userId, category } = req.body;
+        const newTransaction = new Transaction({ date, description, amount, type, userId, category });
         await newTransaction.save();
         res.json(newTransaction);
     } catch (error) {

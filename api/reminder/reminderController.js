@@ -13,7 +13,7 @@ const createReminder = async (req, res) => {
 // קבלת כל התזכורות
 const getReminders = async (req, res) => {
     try {
-        const reminders = await Reminder.find();
+        const reminders = await Reminder.find({ userId: req.user._id });
         res.send(reminders);
     } catch (error) {
         res.status(500).send(error);
@@ -22,7 +22,7 @@ const getReminders = async (req, res) => {
 // עדכון תזכורת
 const updateReminder = async (req, res) => {
     try {
-        const reminder = await Reminder.findByIdAndUpdate(req.params.id, req.body, { new: true });
+        const reminder = await Reminder.findOneAndUpdate({ _id: req.params.id, userId: req.user._id }, req.body, { new: true });
         if (!reminder) {
             return res.status(404).send({ message: 'Reminder not found' });
         }
@@ -34,7 +34,7 @@ const updateReminder = async (req, res) => {
 // מחיקת תזכורת
 const deleteReminder = async (req, res) => {
     try {
-        const reminder = await Reminder.findByIdAndDelete(req.params.id);
+        const reminder = await Reminder.findOneAndDelete({ _id: req.params.id, userId: req.user._id });
         if (!reminder) {
             return res.status(404).send({ message: 'Reminder not found' });
         }

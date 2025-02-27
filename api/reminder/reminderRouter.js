@@ -1,7 +1,7 @@
 // שימוש בספריית express
 const express = require('express');
 // שימוש בפונקציות ליצירת, קבלת, עדכון ומחיקת תזכורות
-const { createReminder, getReminders, updateReminder, deleteReminder } = require('./reminderController');
+const { createReminder, getReminders, updateReminder, deleteReminder } = require('./ReminderController');
 // יצירת מסגרת של המסלולים
 const router = express.Router();
 

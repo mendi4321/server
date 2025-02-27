@@ -24,10 +24,12 @@ const transactionSchema = new mongoose.Schema({
         type: String,
         required: false
     },
-    // שדה הקטגוריה של העסקה
+    // שדה הקטגוריה של העסקה - חובה רק בהוצאות
     category: {
         type: String,
-        required: false
+        required: function () {
+            return this.type === 'expense'; // קטגוריה נדרשת רק עבור הוצאות
+        }
     },
     // שדה התאריך של העסקה
     date: {

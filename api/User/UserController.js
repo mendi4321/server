@@ -60,53 +60,61 @@ const register = async (req, res) => {
 };
 // פונקציה להתחברות למערכת - מקבלת את בקשת המשתמש והאובייקט התגובה (req, res)
 const login = async (req, res) => {
-    // שימוש בגורם מספר 1 להצבת משתנים מהבקשה (req.body)
-    const { email, password } = req.body;
-    // בדיקה אם קיימים משתנים בבקשה
-    if (!email || !password) {
-        return res.status(400).json({
-            success: false,
-            message: 'Email and password are required',
-            error: 'Email and password are required'
-        });
-    }
-    // ניסיון למצוא משתמש עם האימייל המסומך במסד הנתונים
     try {
-        const user = await User.findOne({ email });
-        // בדיקה אם לא נמצא משתמש או שהסיסמא אינה תואמת
-        if (!user || !bcrypt.compareSync(password, user.password)) {
-            return res.status(401).json({
+        const { email, password } = req.body;
+        
+        // בדיקת שדות חובה
+        if (!email || !password) {
+            return res.status(400).json({
                 success: false,
-                message: 'Invalid email or password',
-                error: 'Invalid email or password'
+                message: 'נדרש אימייל וסיסמה'
             });
         }
-        // יצירת טוקן עבור המשתמש
-        const token = jwt.sign({ userId: user._id }, process.env.TOKEN_SECRET, { expiresIn: '1h' });
-        // החזרת תשובה חיובית עם סטטוס 200 (OK)
+
+        // חיפוש המשתמש
+        const user = await User.findOne({ email });
+        console.log('Found user:', user ? 'yes' : 'no'); // לוג לדיבוג
+        
+        // בדיקת סיסמה
+        if (!user || !bcrypt.compareSync(password, user.password)) {
+            console.log('Password verification failed'); // לוג לדיבוג
+            return res.status(401).json({
+                success: false,
+                message: 'אימייל או סיסמה שגויים'
+            });
+        }
+
+        // יצירת טוקן
+        const token = jwt.sign(
+            { userId: user._id },
+            process.env.TOKEN_SECRET,
+            { expiresIn: '24h' }
+        );
+
+        // שליחת תשובה
         res.status(200).json({
             success: true,
-            message: 'Login successful',
+            message: 'התחברת בהצלחה',
             data: {
                 id: user._id,
                 firstName: user.firstName,
                 lastName: user.lastName,
                 email: user.email,
-                birthday: user.birthday,
                 permission: user.permission,
             },
             token,
         });
+
+        console.log('Login successful for:', email); // לוג לדיבוג
     } catch (error) {
-        // תפיסת שגיאות - אם קרתה שגיאה כלשהי בתהליך
-        // מחזיר תשובת שגיאה עם סטטוס 500 (Internal Server Error)
+        console.error('Login error:', error);
         res.status(500).json({
             success: false,
-            message: 'Invalid email or password',
-            error: 'Invalid email or password'
+            message: 'שגיאת שרת בתהליך ההתחברות',
+            error: error.message
         });
     }
-}
+};
 // פונקציה לשליפת כל המשתמשים מהמסד הנתונים
 const getAllUsers = async (req, res) => {
     try {

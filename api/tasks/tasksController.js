@@ -3,30 +3,33 @@ const User = require("../User/UserModel");
 
 exports.getAllTasks = async (req, res) => {
   try {
-    // כל המשתמשים יכולים לראות את כל המשימות עם פרטי המשתמש המשויך
-    const tasks = await Task.find()
+    let query = {};
+
+    // תמיד מסנן לפי משתמש שמבקש את המידע
+    // אם מועבר מזהה ספציפי, משתמשים בו
+    if (req.query.userId) {
+      query.assignedTo = req.query.userId;
+    } else {
+      // אחרת משתמשים במזהה של המשתמש המחובר
+      query.assignedTo = req.user._id;
+    }
+
+    // שליפת המשימות לפי השאילתה
+    const tasks = await Task.find(query)
       .populate('assignedTo', 'firstName lastName email')
       .sort({ Date: 1 }); // ממיין לפי תאריך
-    
+
     res.status(200).json(tasks);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
 };
 
-// יצירת מטלה (רק אדמין)
+// יצירת מטלה
 exports.createTask = async (req, res) => {
   try {
+    // המשימה תמיד משויכת למשתמש שיצר אותה
     let assignedUserId = req.user._id;
-
-    // אם המשתמש הוא אדמין והוא מציין משתמש אחר
-    if (req.user.permission === "admin" && req.body.assignToUserId) {
-      const userExists = await User.findById(req.body.assignToUserId);
-      if (!userExists) {
-        return res.status(404).json({ message: "User not found" });
-      }
-      assignedUserId = req.body.assignToUserId;
-    }
 
     const task = new Task({
       title: req.body.title,
@@ -45,11 +48,11 @@ exports.createTask = async (req, res) => {
 // עדכון סטטוס מטלה
 exports.updateTaskStatus = async (req, res) => {
   try {
-    let query = { _id: req.params.id };
-    // אם לא אדמין, מוסיף בדיקה שהמשימה שייכת למשתמש
-    if (req.user.permission !== "admin") {
-      query.assignedTo = req.user._id;
-    }
+    // משתמש יכול לעדכן רק משימות שלו
+    let query = {
+      _id: req.params.id,
+      assignedTo: req.user._id
+    };
 
     const task = await Task.findOneAndUpdate(
       query,
@@ -66,18 +69,19 @@ exports.updateTaskStatus = async (req, res) => {
   }
 };
 
-// מחיקת מטלה (רק אדמין)
+// מחיקת מטלה
 exports.deleteTask = async (req, res) => {
   try {
-    // רק אדמין יכול למחוק משימות
-    if (req.user.permission !== "admin") {
-      return res.status(403).json({ message: "Only admins can delete tasks" });
-    }
+    // משתמש יכול למחוק רק משימות שלו
+    const task = await Task.findOneAndDelete({
+      _id: req.params.id,
+      assignedTo: req.user._id
+    });
 
-    const task = await Task.findByIdAndDelete(req.params.id);
     if (!task) {
       return res.status(404).json({ message: "Task not found" });
     }
+
     res.status(200).json({ message: "Task deleted successfully" });
   } catch (error) {
     res.status(500).json({ error: error.message });

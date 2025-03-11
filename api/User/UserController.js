@@ -32,7 +32,7 @@ const register = async (req, res) => {
         // save() מחזירה Promise עם המשתמש שנשמר
         const savedUser = await newUser.save();
         // יצירת טוקן עבור המשתמש
-        const token = jwt.sign({ userId: savedUser._id }, process.env.TOKEN_SECRET, { expiresIn: '1h' });
+        const token = jwt.sign({ userId: savedUser._id }, process.env.TOKEN_SECRET, { expiresIn: '24h' });
         // החזרת תשובה חיובית עם סטטוס 201 (Created)
         res.status(201).json({
             success: true,
@@ -62,7 +62,7 @@ const register = async (req, res) => {
 const login = async (req, res) => {
     try {
         const { email, password } = req.body;
-        
+
         // בדיקת שדות חובה
         if (!email || !password) {
             return res.status(400).json({
@@ -74,7 +74,7 @@ const login = async (req, res) => {
         // חיפוש המשתמש
         const user = await User.findOne({ email });
         console.log('Found user:', user ? 'yes' : 'no'); // לוג לדיבוג
-        
+
         // בדיקת סיסמה
         if (!user || !bcrypt.compareSync(password, user.password)) {
             console.log('Password verification failed'); // לוג לדיבוג
@@ -121,13 +121,13 @@ const getAllUsers = async (req, res) => {
         const users = await User.find();
         res.status(200).json({
             success: true,
-            message: 'All users fetched',
+            message: 'המשתמשים נשלפו בהצלחה',
             data: users
         });
     } catch (error) {
         res.status(500).json({
             success: false,
-            message: 'Error fetching users',
+            message: 'שגיאה בשליפת המשתמשים',
             error: error.message
         });
     }

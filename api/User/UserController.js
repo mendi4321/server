@@ -132,9 +132,39 @@ const getAllUsers = async (req, res) => {
         });
     }
 };
+// פונקציה למחיקת משתמש
+const deleteUser = async (req, res) => {
+    try {
+        const userId = req.params.id;
+
+        // בדיקה אם המשתמש קיים
+        const user = await User.findById(userId);
+        if (!user) {
+            return res.status(404).json({
+                success: false,
+                message: 'משתמש לא נמצא'
+            });
+        }
+
+        // מחיקת המשתמש
+        await User.findByIdAndDelete(userId);
+
+        res.status(200).json({
+            success: true,
+            message: 'המשתמש נמחק בהצלחה'
+        });
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: 'שגיאה במחיקת המשתמש',
+            error: error.message
+        });
+    }
+};
 // ייצוא הפונקציות שיהיו זמינות לשימוש בקבצים אחרים
 module.exports = {
     register,
     login,
     getAllUsers,
+    deleteUser,
 };

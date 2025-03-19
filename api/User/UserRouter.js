@@ -17,5 +17,8 @@ router.post('/register', UserController.register);
 // POST /api/users/login - התחברות למערכת
 router.post('/login', UserController.login);
 
+// DELETE /api/user/:id - מחיקת משתמש
+router.delete('/:id', verifyUser, UserController.deleteUser);
+
 // ייצוא הראוטר לשימוש בקובץ הראשי (server.js)
 module.exports = router;
